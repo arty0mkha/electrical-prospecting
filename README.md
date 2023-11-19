@@ -1,4 +1,4 @@
-# electrical-prospecting
+# Electrical-prospecting
 GGD NSU 21501
 
 
