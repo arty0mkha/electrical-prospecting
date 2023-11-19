@@ -44,6 +44,6 @@ GGD NSU 21501
         Максимальная мощность слоёв в модели
     
 	tolerance: float, optional
-        tolerance для scipy.opnimize.minimize
+        tolerance для scipy.optimize.minimize
 
      
