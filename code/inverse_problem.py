@@ -1,6 +1,6 @@
 import scipy as sp
 import numpy as np
-from . import direct_problem as dir
+import direct_problem as dir
 
 # Целевые функции
 
@@ -47,7 +47,7 @@ def Loss_direct(param: np.ndarray,
         direct_data = dir.direct_problem(function_type, param, data[:, 0]) # direct_problem - функция решающая прямую задачу для function_type в среде param и возвращающая значение function_type в точке r_i
         return RMSE(direct_data, data[:,1])
 
-def inverse_problem(N_list : list,
+def inverse_problem_solver(N_list : list,
                     function_type : str,
                     data : np.ndarray,
                     minimization_method : str = 'COBYLA',
@@ -140,7 +140,7 @@ def rhoa (r : np.ndarray,
         s +=  r**3*k12**j /(r**2 + (2*j*h)**2)**(3/2)
     return rho1*(1 +2*s)
 
-def aprox_rhoa_N_layers(r : np.ndarray,
+def aprox_rhoa(r : np.ndarray,
                         param : np.ndarray
                         ) -> np.ndarray:
     ''' Возвращает значение кажущегося сопротивления на поверхности для N-слойной модели param при полуразносе r используя двухслойную модель
@@ -179,11 +179,11 @@ def loss_N_layers(param : np.ndarray,
         Массив формы (K,2), K = количество точек, data[i]=[r_i, f_i], r_i - полуразнос, f_i -измеренное значение    
     '''
     if loss_type == 'RSME':
-        aprox_data = aprox_rhoa_N_layers(data[:,0], param)
+        aprox_data = aprox_rhoa(data[:,0], param)
         # возвращаем RMSE
         return RMSE(data[:,1],aprox_data)
 
-def aprox_inverse_problem(N_list : list,
+def aprox_inverse_problem_solver(N_list : list,
                     data : np.ndarray,
                     minimization_method : str = 'COBYLA',
                     loss_type : str = 'RSME',
@@ -243,3 +243,5 @@ def aprox_inverse_problem(N_list : list,
 
     # возвращается модели и номер с минимальным значением ошибки loss_type
     return results_list, np.where(results_losses == np.min(results_losses))[0][0]
+
+print('inverse_problem was imported')
