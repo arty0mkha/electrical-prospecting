@@ -15,9 +15,10 @@ GGD NSU 21501
 	III) Файл с визуализацией (визуализация всего)
 
 Необоходимые библиотеки:
-	scipy
-	numpy
-	matplotlib
+
+		scipy
+		numpy
+		matplotlib
 
 
 
