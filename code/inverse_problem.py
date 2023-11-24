@@ -4,22 +4,22 @@ from . import direct_problem as dir
 
 # Целевые функции
 
-def RMSE(data: np.ndarray,
+def RMSE(calclated_data: np.ndarray,
          refernce_data: np.ndarray
          ) -> float:
     ''' Возвращает RMSE между data и reference_data
     
     Parameters
     ----------
-    data: numpy.ndarray
-        Массив данных
+    calculated_data: numpy.ndarray
+        Массив данных 
     reference_data: numpy.ndarray
     "Эталонный" массив данных'''
     s = 0
-    K = data.shape[0]
+    K = calclated_data.shape[0]
     # считаем сумму квадратов разности значений
     for i in range(K):
-        s += np.square(data[i] - refernce_data[i])
+        s += np.square(calclated_data[i] - refernce_data[i])
     # возвращаем RMSE
     return np.sqrt(s/K)
 
