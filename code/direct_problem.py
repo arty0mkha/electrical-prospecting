@@ -21,7 +21,7 @@ def potential_intergrand(m, r, param):
 def field_intergrand(m, r, param):
   return m * R(m, param) * sp.special.j1(r * m)
 
-def calculate_resistance(param, method,r):
+def calculate_apparent_resistance(param, method,r):
   rho = param[0::2]
   h = param[1::2]
   if method == "U":
