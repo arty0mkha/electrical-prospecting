@@ -25,9 +25,13 @@ def calculate_apparent_resistance(param, method,r):
   rho = param[0::2]
   h = param[1::2]
   if method == "U":
-  result = r*rho[0]*sp.integrate.quad(potential_intergrand, 0, np.inf, args=(r, param))[0]
+    result=[]
+    for r_i in r:
+      result.append( r_i*rho[0]*sp.integrate.quad(potential_intergrand, 0, np.inf, args=(r_i, param))[0])
   elif method == "E":
-  result = r**2*rho[0]*sp.integrate.quad(field_intergrand, 0, np.inf, args=(r, param))[0] 
+    result=[]
+    for r_i in r:
+      result.append( r_i**2*rho[0]*sp.integrate.quad(field_intergrand, 0, np.inf, args=(r_i, param))[0])
   return result
 
 print('direct_problem was imported')
