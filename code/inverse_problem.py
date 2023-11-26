@@ -1,6 +1,6 @@
 import scipy as sp
 import numpy as np
-import direct_problem as dir
+import direct_problem as direct
 
 # Целевые функции
 
@@ -43,8 +43,8 @@ def Loss_direct(param: np.ndarray,
     data: numpy.ndarray
         Массив формы (K,2), K = количество точек, data[i]=[r_i, f_i], r_i - полуразнос, f_i -измеренное значение    
     '''
-    if loss_type == 'RSME':
-        direct_data = dir.direct_problem(function_type, param, data[:, 0]) # direct_problem - функция решающая прямую задачу для function_type в среде param и возвращающая значение function_type в точке r_i
+direct_data = direct.calculate_aparent_resistance(param, function_type, data[:, 0]) # calculate_aparent_resistance - функция решающая прямую задачу для function_type в среде param и возвращающая значение function_type в точке r_i
+if loss_type == 'RSME':
         return RMSE(direct_data, data[:,1])
 
 def inverse_problem_solver(N_list : list,
