@@ -33,5 +33,5 @@ def calculate_apparent_resistance(param, method,r):
     for r_i in r:
       result.append( r_i**2*rho[0]*sp.integrate.quad(field_intergrand, 0, np.inf, args=(r_i, param))[0])
   return result
-
-print('direct_problem was imported')
+if __name__!='__main__':
+  print('direct_problem was imported')

@@ -247,4 +247,6 @@ def aprox_inverse_problem_solver(N_list : list,
     # возвращается модели и номер с минимальным значением ошибки loss_type
     return results_list, np.where(results_losses == np.min(results_losses))[0][0]
 
-print('inverse_problem was imported')
+
+if __name__  != '__main__':
+    print('inverse_problem was imported')
