@@ -27,23 +27,23 @@ def weber_lipchitz(r,z):
 def weber_lipchitz_derivative(r,z):
   return -r/(np.sqrt(np.square(r)+np.square(z))*(np.square(r)+np.square(z)))
 
-def calculate_apparent_resistance(param, method,r,col=100):
+def calculate_apparent_resistance(param, method,r,num_of_zeros=100):
   rho = param[0::2]
   h = param[1::2]
 
   if method == "U":
     list_bessel0_zeros = np.array([0])
-    list_bessel0_zeros = np.append(list_bessel0_zeros, sp.special.jn_zeros(0, col))
+    list_bessel0_zeros = np.append(list_bessel0_zeros, sp.special.jn_zeros(0, num_of_zeros))
     result = 0
-    for i in range(col):
+    for i in range(num_of_zeros):
       result += r*rho[0]*sp.integrate.quad(potential_intergrand, list_bessel0_zeros[i]/r, list_bessel0_zeros[i+1]/r, args=(r, param))[0]
     result+=r*rho[0]*weber_lipchitz(r,0)
       
   elif method == "E":
     list_bessel1_zeros = np.array([0])
-    list_bessel1_zeros = np.append(list_bessel1_zeros, sp.special.jn_zeros(1, col))
+    list_bessel1_zeros = np.append(list_bessel1_zeros, sp.special.jn_zeros(1, num_of_zeros))
     result = 0
-    for i in range(col):
+    for i in range(num_of_zeros):
       result += r**2*rho[0]*sp.integrate.quad(field_intergrand, list_bessel1_zeros[i]/r, list_bessel1_zeros[i+1]/r, args=(r, param))[0]
     result += -r**2*rho[0]*weber_lipchitz_derivative(r,0)
   return result
