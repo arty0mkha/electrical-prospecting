@@ -44,8 +44,6 @@ def calculate_apparent_resistance(param, method,r,col=100):
     list_bessel1_zeros = np.append(list_bessel1_zeros, sp.special.jn_zeros(1, col))
     result = 0
     for i in range(col):
-      print(list_bessel1_zeros[i],list_bessel1_zeros[i+1])
-      
       result += r**2*rho[0]*sp.integrate.quad(field_intergrand, list_bessel1_zeros[i]/r, list_bessel1_zeros[i+1]/r, args=(r, param))[0]
     result += -r**2*rho[0]*weber_lipchitz_derivative(r,0)
   return result
