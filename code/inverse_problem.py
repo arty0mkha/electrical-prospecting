@@ -31,6 +31,7 @@ def RMSE(calclated_data: np.ndarray,
 def Loss_direct(param: np.ndarray,
          loss_type : str,
          function_type: str,
+         num,
          data: np.ndarray
          ) -> float:
     ''' Возвращает значение ошибки loss_type для среды с параметрами param и данных data, полученных для function_type
@@ -46,12 +47,16 @@ def Loss_direct(param: np.ndarray,
     data: numpy.ndarray
         Массив формы (K,2), K = количество точек, data[i]=[r_i, f_i], r_i - полуразнос, f_i -измеренное значение    
     '''
-    direct_data = direct.calculate_aparent_resistance(param, function_type, data[:, 0]) # calculate_aparent_resistance - функция решающая прямую задачу для function_type в среде param и возвращающая значение function_type в точке r_i
+    direct_data = []
+    for r_i in data[:, 0]:
+        direct_data.append(direct.calculate_apparent_resistance(param, function_type, r_i,num_of_zeros=num))
+    direct_data=np.array(direct_data)
     if loss_type == 'RSME':
             return RMSE(direct_data, data[:,1])
 
 def inverse_problem_solver(N_list : list,
                     function_type : str,
+                    num,
                     data : np.ndarray,
                     minimization_method : str = 'COBYLA',
                     loss_type : str = 'RSME',
@@ -95,12 +100,12 @@ def inverse_problem_solver(N_list : list,
         boundaries = tuple(boundaries[:-1])
         
         # Создание начальных значений rhoa, thickness для минимизации
-        start_param=np.matmul(np.ones(shape=(N,1)).T*np.array([[rhoa_max/4, thickness_max/2]])).reshape(-1)
+        start_param=np.matmul(np.ones((N,1)),np.array([[rhoa_max/2, thickness_max/2]])).reshape(-1)[:-1]
         
         # минимизация
         result = sp.optimize.minimize(fun = Loss_direct,
                                       x0 = start_param,
-                                      args = (loss_type, function_type, data),
+                                      args = (loss_type, function_type, num, data),
                                       method = minimization_method,
                                       bounds = boundaries, 
                                       tol = tolerance
