@@ -1,7 +1,16 @@
 import scipy as sp
 import numpy as np
-def Ri(m,i,param):
- ''' происходит создание модели среды и характеристика слоев: количество, мощбность, плтность и сопротивление(оно и считается ниже)'''
+def Ri(m: int,i: int,param: np.ndarray):
+ ''' происходит создание модели среды и характеристика слоев: количество, мощбность, плтность и сопротивление(оно и считается ниже)
+    
+    Parameters
+    ----------
+    param: numpy.ndarray
+        Массив параметров среды формой (2N-1), ultN -количество слоёв в модели. param[2*(i-1)]=rhoa_i, i=1, ..., N; param[2*(i-1)+1] = thickness_i, i=1, ..., N-1
+    m: int
+        -
+    i: int               
+        -                                        '''
   N = int(len(param)/2+1)
   rho = param[0::2]
   h = param[1::2]
@@ -12,13 +21,30 @@ def Ri(m,i,param):
     rr = (rho[i+1]*Rpl1 - rho[i])/(rho[i+1]*Rpl1 + rho[i]) * np.exp(-2*m*h[i])
     return (1+rr)/(1-rr)
 
-def R(m,param):
+def R(m: int,i: int,param: np.ndarray):
   return Ri(m,0,param)
-def potential_intergrand(m, r, param):
-''' подинтегральные выражения, через которые считаем ro кажущееся через потенциал'''
+def potential_intergrand(m: int,r: int,param: np.ndarray):
+''' подинтегральные выражения, через которые считаем ro кажущееся через потенциал
+    Parameters
+    ----------
+    param: numpy.ndarray
+        Массив параметров среды формой (2N-1), ultN -количество слоёв в модели. param[2*(i-1)]=rhoa_i, i=1, ..., N; param[2*(i-1)+1] = thickness_i, i=1, ..., N-1
+    m: int
+        -
+    r: int   
+        полуразнос   
+        -                                       '''
   return (R(m,param) - 1)*sp.special.j0(r*m)
-def field_intergrand(m, r, param):
-''' подинтегральные выражения, через которые считаем ro кажущееся через поле'''
+def field_intergrand(m: int,r: int,param: np.ndarray):
+''' подинтегральные выражения, через которые считаем ro кажущееся через поле
+    Parameters
+    ----------
+    param: numpy.ndarray
+        Массив параметров среды формой (2N-1), ultN -количество слоёв в модели. param[2*(i-1)]=rhoa_i, i=1, ..., N; param[2*(i-1)+1] = thickness_i, i=1, ..., N-1
+    m: int
+        -
+    r: int   
+        полуразнос                                      '''
   return m *(R(m, param) - 1)*sp.special.j1(r*m)
 
 def weber_lipchitz(r,z):
@@ -26,8 +52,22 @@ def weber_lipchitz(r,z):
 
 def weber_lipchitz_derivative(r,z):
   return -r/(np.sqrt(np.square(r)+np.square(z))*(np.square(r)+np.square(z)))
-def calculate_apparent_resistance(param, method,r,num_of_zeros=100):
-''' Если метод вычисления `method` равен "U", то функция вычисляет значения нулей функции Бесселя первого рода и нуля первого порядка (сохраняется в массиве `list_besel_zeros`).
+def calculate_apparent_resistance(param: np.ndarray, method: str,r: int,num_of_zeros=100):
+'''Вычисляет кажущееся сопротивление среды N при полуразносе r
+
+    Parameters
+    ----------
+    param: numpy.ndarray
+        Массив параметров среды формой (2N-1), ultN -количество слоёв в модели. param[2*(i-1)]=rhoa_i, i=1, ..., N; param[2*(i-1)+1] = thickness_i, i=1, ..., N-1
+    m: int
+        -
+    r: int   
+        полуразнос  
+    method: str
+        переменная отвечающая за выбор по полю или потнециалу будет считаться ro кажущееся
+    num_of_zeros=100:
+        количество нулей бесселя
+ Если метод вычисления `method` равен "U", то функция вычисляет значения нулей функции Бесселя первого рода и нуля первого порядка (сохраняется в массиве `list_besel_zeros`).
 Затем происходит цикл по значениям `col` (количество нулей), внутри которого вызывается функция `integrate.quad` для вычисления интеграла.
 Результаты интегралов суммируются в переменную `result`.
 Аналогично, если метод `method` равен "E" , функция выполняет вычисления для значения нулей функции Бесселя второго рода и нуля первого порядка.
