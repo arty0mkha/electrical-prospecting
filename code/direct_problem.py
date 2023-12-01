@@ -1,6 +1,6 @@
 import scipy as sp
 import numpy as np
-
+    ''' происходит создание модели среды и характеристика слоев: количество, мощбность, плтность и сопротивление(оно и считается ниже)'''
 def Ri(m,i,param):
   N = int(len(param)/2+1)
   rho = param[0::2]
@@ -14,10 +14,11 @@ def Ri(m,i,param):
 
 def R(m,param):
   return Ri(m,0,param)
-
+''' подинтегральные выражения, через которые считаем ro кажущееся'''
+#через потенциал
 def potential_intergrand(m, r, param):
   return (R(m,param) - 1)*sp.special.j0(r*m)
-
+#через поле
 def field_intergrand(m, r, param):
   return m *(R(m, param) - 1)*sp.special.j1(r*m)
 
@@ -26,7 +27,12 @@ def weber_lipchitz(r,z):
 
 def weber_lipchitz_derivative(r,z):
   return -r/(np.sqrt(np.square(r)+np.square(z))*(np.square(r)+np.square(z)))
-
+#функция, которая считает интеграл выше указанных выражений
+''' Если метод вычисления `method` равен "U", то функция вычисляет значения нулей функции Бесселя первого рода и нуля первого порядка (сохраняется в массиве `list_besel_zeros`).
+Затем происходит цикл по значениям `col` (количество нулей), внутри которого вызывается функция `integrate.quad` для вычисления интеграла.
+Результаты интегралов суммируются в переменную `result`.
+Аналогично, если метод `method` равен "E" , функция выполняет вычисления для значения нулей функции Бесселя второго рода и нуля первого порядка.
+Результат вычисления видимого сопротивления возвращается из функции.'''
 def calculate_apparent_resistance(param, method,r,num_of_zeros=100):
   rho = param[0::2]
   h = param[1::2]
