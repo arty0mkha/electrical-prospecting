@@ -14,7 +14,6 @@ def Ri(m,i,param):
 
 def R(m,param):
   return Ri(m,0,param)
-''' подинтегральные выражения, через которые считаем ro кажущееся'''
 def potential_intergrand(m, r, param):
 ''' подинтегральные выражения, через которые считаем ro кажущееся через потенциал'''
   return (R(m,param) - 1)*sp.special.j0(r*m)
