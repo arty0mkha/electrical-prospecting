@@ -20,7 +20,7 @@ def RMSE(calculated_data:np.ndarray,
   reference_data: numpy.ndarray
   "Эталонный" массив данных длиной K
   """
-  return np.sqrt(np.mean((measured_func - theoretic_func)**2))
+  return np.sqrt(np.mean((calculated_data - reference_data)**2))
 
 def RMSPE(calculated_data: np.ndarray,
          refernce_data: np.ndarray
