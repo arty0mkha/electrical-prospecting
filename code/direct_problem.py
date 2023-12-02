@@ -59,7 +59,10 @@ def potential_intergrand(m: float,
   '''
   return (R(m,param) - 1)*sp.special.j0(r*m)
 
-def field_intergrand(m: int,r: int,param: list):
+def field_intergrand(m:int,
+                     r:int,
+                     param:list
+                    ) -> float:
   ''' Возвращает значение подынтегрального выражения, при расчёте кажущегося сопротивления через поле
 
     Parameters
