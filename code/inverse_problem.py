@@ -25,7 +25,7 @@ def RMSE(calculated_data: np.ndarray,
     # возвращаем RMSE
     return np.sqrt(s/K)
 
-def RMSEP(calculated_data: np.ndarray,
+def RMSPE(calculated_data: np.ndarray,
          refernce_data: np.ndarray
          ) -> float:
     ''' Возвращает RMSEP % между data и reference_data
@@ -69,17 +69,17 @@ def Loss_direct(param: list,
 
     direct_data = np.array(direct_data)
     
-    if loss_type == 'RSME':
+    if loss_type == 'RMSE':
             return RMSE(direct_data, data[:,1])
-    if loss_type == 'RSMEP':
-        return RMSEP(direct_data, data[:,1])
+    if loss_type == 'RMSPE':
+        return RMSPE(direct_data, data[:,1])
     
 
 def inverse_problem_solver(N_list : list,
                     function_type : str,
                     data : np.ndarray,
                     minimization_method : str = 'COBYLA',
-                    loss_type : str = 'RSME',
+                    loss_type : str = 'RMSE',
                     thickness_max : float =5*10**2,
                     tolerance : float = 10**(-5),
                     start: list =[],
