@@ -37,7 +37,7 @@ def RMSPE(calculated_data: np.ndarray,
     K = calculated_data.shape[0]
     # считаем сумму квадратов разности значений 
     s = sum(np.square((calculated_data-refernce_data)/refernce_data))
-    # возвращаем RMSEP %
+    # возвращаем RMSPE %
     return np.sqrt(s/K)*100
 
 #Обратная задача с использованием решения прямой задачи
