@@ -7,23 +7,20 @@ else:
 
 # Целевые функции
 
-def RMSE(calculated_data: np.ndarray,
-         refernce_data: np.ndarray
-         ) -> float:
-    ''' Возвращает RMSE между data и reference_data
-    
-    Parameters
-    ----------
-    calculated_data: numpy.ndarray
-        Массив данных длиной K
-    reference_data: numpy.ndarray
-        "Эталонный" массив данных длиной K
-    '''
-    K = calculated_data.shape[0]
-    # считаем сумму квадратов разности значений 
-    s = sum(np.square(calculated_data-refernce_data))
-    # возвращаем RMSE
-    return np.sqrt(s/K)
+def RMSE(calculated_data:np.ndarray,
+         reference_data:np.ndarray
+        ) -> np.float64:
+  """
+  Возвращает целевую функцию от измеренных и теоретических значений
+
+  Параметры:
+  ----------
+  calculated_data: numpy.ndarray
+  Массив данных длиной K
+  reference_data: numpy.ndarray
+  "Эталонный" массив данных длиной K
+  """
+  return np.sqrt(np.mean((measured_func - theoretic_func)**2))
 
 def RMSPE(calculated_data: np.ndarray,
          refernce_data: np.ndarray
