@@ -25,6 +25,24 @@ def RMSE(calculated_data: np.ndarray,
     # возвращаем RMSE
     return np.sqrt(s/K)
 
+def RMSEP(calculated_data: np.ndarray,
+         refernce_data: np.ndarray
+         ) -> float:
+    ''' Возвращает RMSEP % между data и reference_data
+    
+    Parameters
+    ----------
+    calculated_data: numpy.ndarray
+        Массив данных длиной K
+    reference_data: numpy.ndarray
+        "Эталонный" массив данных длиной K
+    '''
+    K = calculated_data.shape[0]
+    # считаем сумму квадратов разности значений 
+    s = sum(np.square((calculated_data-refernce_data)/refernce_data))
+    # возвращаем RMSEP %
+    return np.sqrt(s/K)*100
+
 #Обратная задача с использованием решения прямой задачи
 
 def Loss_direct(param: list,
@@ -53,6 +71,9 @@ def Loss_direct(param: list,
     
     if loss_type == 'RSME':
             return RMSE(direct_data, data[:,1])
+    if loss_type == 'RSMEP':
+        return RMSEP(direct_data, data[:,1])
+    
 
 def inverse_problem_solver(N_list : list,
                     function_type : str,
