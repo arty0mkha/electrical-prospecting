@@ -19,7 +19,7 @@ def logderivative(func:np.array, var:np.array, length:int) -> np.ndarray:
     logderiv.append(var[i]/func[i]*(func[i+1]-func[i])/(var[i+1]-var[i]))
   return (np.array(logderiv))
 
-def matrix_models(parameters:list, layer_num:int, size:int, dh:list=None, drho:list=None) -> np.ndarray:
+def matrix_models(parameters:list, layer_num:int, size:int, method:str, dh:list=None, drho:list=None) -> np.ndarray:
   """
   Возвращает матрицу ранга size, содержающие высчитанные в прямой задаче модели
   параметры, изменяемые с шагом dh и drho
@@ -32,6 +32,8 @@ def matrix_models(parameters:list, layer_num:int, size:int, dh:list=None, drho:l
   Номер слоя, который подвергается (XD подвергается :D) изменению
   size:int
   Размер получаемой матрицы
+  method:str
+  Метод вычисления: по потенциалу(U) или по полю(E)
   dh:list
   Список высчитанных шагов по оси Ох (необязателен)
   drho:list
@@ -62,7 +64,6 @@ def matrix_models(parameters:list, layer_num:int, size:int, dh:list=None, drho:l
     func_param.append(g)
   func_param = np.array(func_param)
 
-  method='U'
   resist = []
   for i in range(size):
     resistance=[]
