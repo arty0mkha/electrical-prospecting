@@ -78,3 +78,6 @@ def matrix_models(parameters:list, layer_num:int, size:int, method:str, dh:list=
       a.append(resist[i][j*100:100*(j+1)])
     res.append(np.array(a))
   return np.array(res)
+
+if __name__  != '__main__':
+    print('inverse_problem was imported')
