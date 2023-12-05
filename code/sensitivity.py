@@ -1,5 +1,8 @@
 import numpy as np
-from code import direct_problem as direct
+if __name__  == '__main__':
+    import direct_problem as direct
+else:
+    from code import direct_problem as direct
 
 def logderivative(func:np.array, var:np.array, length:int) -> np.ndarray:
   """
