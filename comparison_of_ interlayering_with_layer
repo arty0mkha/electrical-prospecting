@@ -1,0 +1,92 @@
+import numpy as np
+import scipy as sp
+import matplotlib.pyplot as plt 
+from code import direct_problem as direct
+from code import inverse_problem as inv 
+
+r=np.logspace(-1,3,1000)
+param=[50,40,10,20,30,20,10,20,30,20,10,20,100]
+method='U'
+
+resistance=[]
+for r_i in r:
+    resistance.append(direct.calculate_apparent_resistance(param,method,r_i,10*int(1+r_i/200)))
+# количество нулей функции бесселя растёт с ростом r_i, ускоряя процесс при малых r_i и сохраняя точность при больших
+# 200 подобранно эмпирически, вроде справляется наилучшим способом
+
+plt.loglog(r,resistance)
+plt.title(f'apparent_resistance_by_{method}')
+
+path_to_experimental_data='./experimental_data/BURM7.EXP'
+f=open(path_to_experimental_data)
+path_to_AB_MN_data=('./experimental_data/'+f.readline()).strip()
+f.close()
+dat = np.genfromtxt(path_to_experimental_data, comments= '$' , skip_header = 3)
+experimental_rhoa = dat.T[2] # измеренные кажущиеся сопротивления
+stt=np.genfromtxt(path_to_AB_MN_data,comments= '$')
+AB2 = stt.T[0] # Полуразнос
+
+N_layers_list=[3] # список из количества слоёв в моделях
+exp_data=np.array([r, resistance ]).T # Данные
+method='U'
+start=[[50, 40,
+        20, 140,
+        100]]
+bound=[[(25,75), (10,70),
+      (1,40), (100,180),
+        (50,150)]]
+
+rk_start=[]
+for r in AB2:
+    rk_start.append(direct.calculate_apparent_resistance(start[0],method,r,num_of_zeros=10*int(1+r/200)))
+rk_start=np.array(rk_start)
+plt.loglog(AB2,rk_start, label='start_param')
+plt.loglog(AB2,experimental_rhoa,c='red', label='experimental data')
+plt.legend()
+plt.title(path_to_experimental_data.split('/')[2])
+print(inv.RMSE(rk_start,experimental_rhoa))
+print(inv.RMSPE(rk_start,experimental_rhoa),'%')
+
+loss='RMSPE'
+minim='L-BFGS-B'
+inverse=inv.inverse_problem_solver(N_layers_list,method, exp_data, minimization_method=minim, loss_type=loss, start=start,boundaries=bound)
+results=inverse[0] # модели полученные из обратной задачи
+ind=inverse[1] #  индекс модели с наименьшим loss_N_layers в results
+print(ind)
+
+
+#Вывод количества слоёв в модели, её параметров и полученной ошибки
+result = [ ]
+for i in range (len(N_layers_list)):
+    result.append(results[i].x)
+    print('\nnumber of layers= ', N_layers_list[i], '\nparam =', results[i].x, f'\nloss {loss} =', results[i].fun)
+
+
+# Визуализация
+
+r=np.logspace(-1,3,1000)
+param=[50,40,10,20,30,20,10,20,30,20,10,20,100]
+method='U'
+
+resistance=[]
+for r_i in r:
+    resistance.append(direct.calculate_apparent_resistance(param,method,r_i,10*int(1+r_i/200)))
+
+
+for i in range(len(N_layers_list)):
+    rk=[]
+    for r in AB2:
+        rk.append(direct.calculate_apparent_resistance(results[i].x,method,r,num_of_zeros=10*int(1+r/200)))
+    rk=np.array(rk)
+    if i==ind:
+        plt.scatter(AB2,rk, c='black',label=f'{N_layers_list[i]}_layers, best loss={results[i].fun}')
+    else: plt.loglog(AB2,rk, label=f'{N_layers_list[i]}_layers')
+r=np.logspace(-1,3,1000)
+param=[50,40,10,20,30,20,10,20,30,20,10,20,100]
+method='U'
+plt.loglog(AB2,rk_start, label='start_param')
+plt.loglog(r,resistance, label='experimental data')
+plt.xlabel('Полуразнос, м')
+plt.ylabel('Кажущееся сопротивление, Ом')
+plt.legend()
+plt.title(path_to_experimental_data.split('/')[2])
