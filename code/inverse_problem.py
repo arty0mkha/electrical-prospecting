@@ -87,18 +87,16 @@ def inverse_problem_solver(function_type: str,
     function_type: str
         Тип минимизируемой функции: 'rhoa' - кажущееся сопротивление, 'u' - разность потенциалов, 'E' - электрическое поле    
     data: numpy.ndarray
-        Массив формы (K,2), K = количество измерений, data[i]=[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
+        Массив формы =[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
     start: list
-        список из моделей среды для каждой из n_list 
+        Список стартовых значений для минимизации loss
     boundaries: list
-        Список из кортежей определяющий границы значений параметров среды
+        Список из кортежей границ значений параметров среды
     minimization_method: str, optional
-        Метод оптимизации для scipy.optimize.minimize. \n
+        Метод оптимизации для scipy.optimize.minimize.
         Доступные варианты: 'Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP', 'trust-constr'
     loss_type: str, optional
         Тип целевой функции
-    thickness_max: float, optional
-        Максимальная мощность слоёв в модели
     tolerance: float, optional
         tolerance для scipy.optimize.minimize
     '''
@@ -114,34 +112,31 @@ def inverse_problem_solver(function_type: str,
     return result       
 
 
-def inverse_problems_solver(N:int,
-                    function_type: str,
-                    data: np.ndarray,
-                    start: list,
-                    boundaries: list,
-                    minimization_method: str ='COBYLA',
-                    loss_type: str ='RMSE',
-                    tolerance: float =1e-5,
-                    ):
-    '''Возвращает слойную модель в виде объекта класса scipy.optimize.OptimizeResult и индекс модели с минимальной ошибкой
+def inverse_N_problems_solver(function_type: str,
+                             data: np.ndarray,
+                             start: list,
+                             boundaries: list,
+                             minimization_method: str ='COBYLA',
+                             loss_type: str ='RMSE',
+                             tolerance: float =1e-5,
+                             ):
+    '''Возвращает N моделей в виде объекта класса scipy.optimize.OptimizeResult и индекс модели с минимальной ошибкой
     
     Parameters
     ----------
     function_type: str
         Тип минимизируемой функции: 'rhoa' - кажущееся сопротивление, 'u' - разность потенциалов, 'E' - электрическое поле    
     data: numpy.ndarray
-        Массив формы (K,2), K = количество измерений, data[i]=[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
+        Массив формы (K,2), K = количество моделей, data[i]=[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
     start: list
-        список из моделей среды для каждой из n_list 
+        Список списков из стартовых значений для минимизации loss
     boundaries: list
-        Список из кортежей определяющий границы значений параметров среды
+        Список списков из кортежей границ значений параметров среды
     minimization_method: str, optional
         Метод оптимизации для scipy.optimize.minimize. \n
         Доступные варианты: 'Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP', 'trust-constr'
     loss_type: str, optional
         Тип целевой функции
-    thickness_max: float, optional
-        Максимальная мощность слоёв в модели
     tolerance: float, optional
         tolerance для scipy.optimize.minimize
     '''
@@ -149,7 +144,7 @@ def inverse_problems_solver(N:int,
     results = []
     results_losses = []
 
-    for i in range(N):
+    for i in range(len(data):
         results.append(inverse_problem_solver(function_type,
                                               minimization_method, 
                                               data[i], 
