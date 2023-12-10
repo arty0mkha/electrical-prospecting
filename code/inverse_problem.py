@@ -144,7 +144,7 @@ def inverse_N_problems_solver(function_type: str,
     results = []
     results_losses = []
 
-    for i in range(len(data):
+    for i in range(len(data)):
         results.append(inverse_problem_solver(function_type,
                                               minimization_method, 
                                               data[i], 
