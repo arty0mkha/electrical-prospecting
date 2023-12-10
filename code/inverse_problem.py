@@ -72,81 +72,91 @@ def Loss_direct(param: list,
         return RMSPE(direct_data, data[:,1])
     
 
-def inverse_problem_solver(N_list : list,
-                    function_type : str,
-                    data : np.ndarray,
-                    minimization_method : str = 'COBYLA',
-                    loss_type : str = 'RMSE',
-                    thickness_max : float =5*10**2,
-                    tolerance : float = 10**(-5),
-                    start: list =[],
-                    boundaries: list =[]
+def inverse_problem_solver(function_type: str,
+                    data: np.ndarray,
+                    start: list,
+                    boundaries: list,
+                    minimization_method: str ='COBYLA',
+                    loss_type: str ='RMSE',
+                    tolerance: float =1e-5,
                     ):
-    '''Возвращает list из N_list[i]-слойных моделей в виде объекта класса scipy.optimize.OptimizeResult и индекс модели с минимальной ошибкой
+    '''Возвращает слойную модель в виде объекта класса scipy.optimize.OptimizeResult и индекс модели с минимальной ошибкой
     
     Parameters
     ----------
-    N_list: list
-        Список из числа слоёв в моделях, среди которых будет происходить подбор наиболее подходящей  
     function_type: str
         Тип минимизируемой функции: 'rhoa' - кажущееся сопротивление, 'u' - разность потенциалов, 'E' - электрическое поле    
     data: numpy.ndarray
-        Массив формы (K,2), K = количество измерений, data[i]=[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
+        Массив формы =[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
+    start: list
+        Список стартовых значений для минимизации loss
+    boundaries: list
+        Список из кортежей границ значений параметров среды
+    minimization_method: str, optional
+        Метод оптимизации для scipy.optimize.minimize.
+        Доступные варианты: 'Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP', 'trust-constr'
+    loss_type: str, optional
+        Тип целевой функции
+    tolerance: float, optional
+        tolerance для scipy.optimize.minimize
+    '''
+    # минимизация
+    result = sp.optimize.minimize(fun = Loss_direct,
+                                x0 = start,
+                                args = (loss_type, function_type, data),
+                                method = minimization_method,
+                                bounds = boundaries, 
+                                tol = tolerance
+                                )
+    # возвращается модель
+    return result       
+
+
+def inverse_N_problems_solver(function_type: str,
+                             data: np.ndarray,
+                             start: list,
+                             boundaries: list,
+                             minimization_method: str ='COBYLA',
+                             loss_type: str ='RMSE',
+                             tolerance: float =1e-5,
+                             ):
+    '''Возвращает N моделей в виде объекта класса scipy.optimize.OptimizeResult и индекс модели с минимальной ошибкой
+    
+    Parameters
+    ----------
+    function_type: str
+        Тип минимизируемой функции: 'rhoa' - кажущееся сопротивление, 'u' - разность потенциалов, 'E' - электрическое поле    
+    data: numpy.ndarray
+        Массив формы (K,2), K = количество моделей, data[i]=[r_i,f_i], r_i - полуразнос, f_i -измеренное значение
+    start: list
+        Список списков из стартовых значений для минимизации loss
+    boundaries: list
+        Список списков из кортежей границ значений параметров среды
     minimization_method: str, optional
         Метод оптимизации для scipy.optimize.minimize. \n
         Доступные варианты: 'Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP', 'trust-constr'
     loss_type: str, optional
         Тип целевой функции
-    thickness_max: float, optional
-        Максимальная мощность слоёв в модели
     tolerance: float, optional
         tolerance для scipy.optimize.minimize
-    start: list
-        список из моделей среды для каждой из n_list 
-    boundaries: list
-        Список из кортежей определяющий границы значений параметров среды
     '''
-    # создание списков подобранных моделей и ошибокs
-    results_list = []
+
+    results = []
     results_losses = []
 
-    # ограничение на сопротивление слоёв
-    rhoa_max = max(data[:][1])
-    for i in range(len(N_list)):
-        # Создание ограничений на rhoa, thickness для каждого слоя в scipy.optimize.minimize
-        if boundaries == []:
-            for j in range(N_list[i]):
-                boundaries.append((0,2*rhoa_max))
-                boundaries.append((0,thickness_max))
-            boundaries = tuple(boundaries[:-1])
-            start_param=start[i]
-            # минимизация
-            result = sp.optimize.minimize(fun = Loss_direct,
-                                        x0 = start_param,
-                                        args = (loss_type, function_type, data),
-                                        method = minimization_method,
-                                        bounds = boundaries, 
-                                        tol = tolerance
-                                      )
-        else:
-            start_param=start[i]
-            # минимизация
-            result = sp.optimize.minimize(fun = Loss_direct,
-                                        x0 = start_param,
-                                        args = (loss_type, function_type, data),
-                                        method = minimization_method,
-                                        bounds = boundaries[i], 
-                                        tol = tolerance
-                                      )
-        
-        # подобранные параметры записываются в список
-        results_list.append(result)
-        
-        # ошибка записывается в список
-        results_losses.append(result.fun)
+    for i in range(len(data):
+        results.append(inverse_problem_solver(function_type,
+                                              minimization_method, 
+                                              data[i], 
+                                              minimization_method=minimization_method, 
+                                              loss_type=loss_type, 
+                                              start=start[i],
+                                              boundaries=boundaries[i],
+                                              tolerance = tolerance,
+                                              ))
 
-    # возвращается модели и номер с минимальным значением ошибки loss_type
-    return results_list, np.where(results_losses == np.min(results_losses))[0][0]       
+    # возвращается список моделей и номер с минимальным значением ошибки loss_type
+    return results, np.where(results_losses == np.min(results_losses))[0][0]
 
 if __name__  != '__main__':
     print('inverse_problem was imported')
