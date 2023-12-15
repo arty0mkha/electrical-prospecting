@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+from tqdm.notebook import tqdm
 if __name__  == '__main__':
     import direct_problem as direct
 else:
@@ -64,7 +65,7 @@ def matrix_models(parameters:list, layer_num:int, size:int, method:str, dh:list=
   func_param = np.array(func_param)
 
   resist = []
-  for i in range(size):
+  for i in tqdm(range(size)):
     resistance=[]
     for j in range(size):
       for r_i in r:
