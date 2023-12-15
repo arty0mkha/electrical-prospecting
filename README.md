@@ -19,6 +19,7 @@ GGD NSU 21501
 		scipy
 		numpy
 		matplotlib
+		tqdm
 
 
 
