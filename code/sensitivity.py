@@ -1,26 +1,22 @@
 import numpy as np
+import copy
 if __name__  == '__main__':
     import direct_problem as direct
 else:
     from code import direct_problem as direct
 
-def logderivative(func:np.array, var:np.array, length:int) -> np.ndarray:
-  """
-  Возвращает логарифмическую производную
+def sense_one_point(r,param,change_num,delta,method):
+    changed_param=copy.copy(param)
+    changed_param[change_num]+=delta
+    resistance0=direct.calculate_apparent_resistance(param,method,r,10*int(1+r/200))
+    resistance1=direct.calculate_apparent_resistance(changed_param,method,r,10*int(1+r/200))
+    return param[change_num]/resistance0*(resistance1-resistance0)/(delta)
 
-  Параметры:
-  ----------
-  func:np.ndarray
-  Массив значений функции
-  var:np.ndarray
-  Массив значений переменной
-  length:int
-  Длина массива производных, не больше минимальной длины из принимаемых массивов
-  """
-  logderiv = []
-  for i in range(length-1):
-    logderiv.append(var[i]/func[i]*(func[i+1]-func[i])/(var[i+1]-var[i]))
-  return (np.array(logderiv))
+def sense_line(r_array,param,change_num,delta,method):
+    n=[]
+    for r_i in r_array:
+        n.append(sense_one_point(r_i,param,change_num,delta,method))
+    return n
 
 def matrix_models(parameters:list, layer_num:int, size:int, method:str, dh:list=None, drho:list=None) -> np.ndarray:
   """
@@ -48,16 +44,16 @@ def matrix_models(parameters:list, layer_num:int, size:int, method:str, dh:list=
   if drho==None:
     drho = []
     for i in range(-int(size/2),0):
-      drho.append((3/2)**(np.abs(i)/int(size/2)))
+      drho.append((10)**(i/int(size/2)))
     for i in range(0,int(size/2)+1):
-      drho.append((3/2)**(i/int(size/2)))
+      drho.append((10)**(i/int(size/2)))
 
   if dh==None:
     dh = []
     for i in range(-int(size/2),0):
-      dh.append((3/2)**(np.abs(i)/int(size/2)))
+      dh.append((10)**(i/int(size/2)))
     for i in range(0,int(size/2)+1):
-      dh.append((3/2)**(i/int(size/2)))
+      dh.append((10)**(i/int(size/2)))
 
   func_param = []
   for i in range(size):
@@ -83,4 +79,4 @@ def matrix_models(parameters:list, layer_num:int, size:int, method:str, dh:list=
   return np.array(res)
 
 if __name__  != '__main__':
-    print('inverse_problem was imported')
+    print('sensivity was imported')
