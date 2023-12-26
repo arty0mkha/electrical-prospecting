@@ -97,7 +97,7 @@ def matrix_models(r:np.ndarray, parameters:list, layers_change:tuple, size:int, 
   for i in range(size):
     a = []
     for j in range(size):
-      a.append(resist[i][j*100:100*(j+1)])
+      a.append(resist[i][j*r.shape[0]:r.shape[0]*(j+1)])
     res.append(np.array(a))
   return np.array(res)
 
