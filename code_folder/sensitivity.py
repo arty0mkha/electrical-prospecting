@@ -136,7 +136,7 @@ def error_map_by_Artyom(r:np.ndarray,
     
     loss_map = np.zeros(shape=(size, size))
 
-    for i in range(size):
+    for i in tqdm(range(size)):
         for j in range(size):
             local_param[change_indexes_[0]] = new_first_param[i] 
             local_param[change_indexes_[1]] = new_second_param[j] 
